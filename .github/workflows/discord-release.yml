@@ -1,0 +1,72 @@
+
+name: Discord Release Notification
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send release to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          webhook = os.environ["DISCORD_WEBHOOK_URL"]
+          name = os.environ.get("RELEASE_NAME") or os.environ["RELEASE_TAG"]
+          tag = os.environ["RELEASE_TAG"]
+          url = os.environ["RELEASE_URL"]
+          body = os.environ.get("RELEASE_BODY") or "Tidak ada changelog."
+          repo = os.environ["REPOSITORY"]
+
+          payload = {
+              "username": "Levelling Panel",
+              "allowed_mentions": {"parse": []},
+              "embeds": [{
+                  "title": f"🚀 Release Baru: {name}"[:256],
+                  "url": url,
+                  "description": body[:4000],
+                  "color": 5793266,
+                  "fields": [
+                      {
+                          "name": "📦 Versi",
+                          "value": tag[:1024],
+                          "inline": True
+                      },
+                      {
+                          "name": "📁 Repository",
+                          "value": repo[:1024],
+                          "inline": True
+                      }
+                  ],
+                  "footer": {
+                      "text": "Silahkan Download ulang update terbaru panelnya"
+                  }
+              }]
+          }
+
+          request = urllib.request.Request(
+              webhook,
+              data=json.dumps(payload).encode("utf-8"),
+              headers={"Content-Type": "application/json"},
+              method="POST"
+          )
+
+          with urllib.request.urlopen(request, timeout=20) as response:
+              print("Discord response:", response.status)
+          PY
