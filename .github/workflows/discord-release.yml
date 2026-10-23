@@ -1,19 +1,19 @@
+
 name: Discord Release Notification
 
 on:
   release:
     types: [published]
 
-
 permissions:
   contents: read
 
 jobs:
   notify-discord:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
-      - name: Send release to Discord
+      - name: Send release notification to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           RELEASE_NAME: ${{ github.event.release.name }}
@@ -26,47 +26,79 @@ jobs:
           import json
           import os
           import urllib.request
+          import urllib.error
 
-          webhook = os.environ["DISCORD_WEBHOOK_URL"]
-          name = os.environ.get("RELEASE_NAME") or os.environ["RELEASE_TAG"]
+          webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+
+          if not webhook:
+              raise SystemExit(
+                  "ERROR: Secret DISCORD_WEBHOOK_URL belum dikonfigurasi."
+              )
+
+          name = (
+              os.environ.get("RELEASE_NAME", "").strip()
+              or os.environ["RELEASE_TAG"]
+          )
           tag = os.environ["RELEASE_TAG"]
           url = os.environ["RELEASE_URL"]
-          body = os.environ.get("RELEASE_BODY") or "Tidak ada changelog."
+          body = (
+              os.environ.get("RELEASE_BODY", "").strip()
+              or "Tidak ada changelog untuk versi ini."
+          )
           repo = os.environ["REPOSITORY"]
+
+          # Discord embed description maksimal 4096 karakter.
+          if len(body) > 4000:
+              body = body[:3997] + "..."
 
           payload = {
               "username": "Levelling Panel",
               "allowed_mentions": {"parse": []},
-              "embeds": [{
-                  "title": f"🚀 Release Baru: {name}"[:256],
-                  "url": url,
-                  "description": body[:4000],
-                  "color": 5793266,
-                  "fields": [
-                      {
-                          "name": "📦 Versi",
-                          "value": tag[:1024],
-                          "inline": True
-                      },
-                      {
-                          "name": "📁 Repository",
-                          "value": repo[:1024],
-                          "inline": True
+              "embeds": [
+                  {
+                      "title": f"🚀 Release Baru: {name}"[:256],
+                      "url": url,
+                      "description": body,
+                      "color": 5793266,
+                      "fields": [
+                          {
+                              "name": "📦 Versi",
+                              "value": tag[:1024],
+                              "inline": True
+                          },
+                          {
+                              "name": "📁 Repository",
+                              "value": repo[:1024],
+                              "inline": True
+                          }
+                      ],
+                      "footer": {
+                          "text": "Silakan download update terbaru Levelling Panel."
                       }
-                  ],
-                  "footer": {
-                      "text": "Silahkan Download ulang update terbaru panelnya"
                   }
-              }]
+              ]
           }
 
           request = urllib.request.Request(
               webhook,
-              data=json.dumps(payload).encode("utf-8"),
+              data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
               headers={"Content-Type": "application/json"},
               method="POST"
           )
 
-          with urllib.request.urlopen(request, timeout=20) as response:
-              print("Discord response:", response.status)
+          try:
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  print(
+                      f"Discord notification sent. HTTP {response.status}"
+                  )
+          except urllib.error.HTTPError as error:
+              print(f"Discord returned HTTP {error.code}")
+              print(
+                  error.read().decode("utf-8", errors="replace")
+              )
+              raise
+          except urllib.error.URLError as error:
+              raise SystemExit(
+                  f"Failed to connect to Discord: {error.reason}"
+              )
           PY
