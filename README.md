@@ -1,11 +1,11 @@
-NinjaSaga CC Panel 1.0.0 - Portable
+NinjaSaga CC Panel 1.0.1 - Portable
 =====================================
 
 Cara download
 -------------
 Masuk ke link berikut:
-https://github.com/n0faxe/Levelling-Panel/releases/
-Pilih NinjaSagaCC.Portable.1.0.0.zip
+- https://github.com/n0faxe/Levelling-Panel/releases/
+- Pilih NinjaSagaCC.Portable.1.0.0.zip
 
 Cara menjalankan
 ----------------
