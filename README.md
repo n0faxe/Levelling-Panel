@@ -6,6 +6,7 @@ Cara download
 Masuk ke link berikut:
 - https://github.com/n0faxe/Levelling-Panel/releases/
 - Pilih NinjaSagaCC.Portable.1.0.0.zip
+- **Minta Access Key ke Admin**
 
 Cara menjalankan
 ----------------
