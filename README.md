@@ -1,4 +1,4 @@
-NinjaSaga CC Panel 1.0.1 - Portable
+NinjaSaga CC Panel 1.0.3 - Portable
 =====================================
 
 Cara download
@@ -19,6 +19,10 @@ Membuka beberapa akun sekaligus
 Double-click "Start Panel.bat" lagi. Instance kedua otomatis memakai port 8001,
 instance ketiga port 8002, dan seterusnya. Setiap instance punya sesi, log, dan
 folder data sendiri di data/instances/<port>/.
+
+Access Key
+-------------------------------
+Masuk ke channel license-ninjasagacc di discord dan klik Generate key
 
 Opsi command line
 -----------------
