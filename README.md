@@ -1,4 +1,4 @@
-NinjaSaga CC Panel 1.0.3 - Portable
+NinjaSaga CC Panel 1.0.4 - Portable
 =====================================
 
 Cara download
@@ -22,7 +22,8 @@ folder data sendiri di data/instances/<port>/.
 
 Access Key
 -------------------------------
-Masuk ke channel license-ninjasagacc di discord dan klik Generate key
+- Masuk ke channel license-ninjasagacc di discord dan klik Generate key
+- Masukkan device ID
 
 Opsi command line
 -----------------
