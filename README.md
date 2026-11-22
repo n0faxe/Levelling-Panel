@@ -1,4 +1,4 @@
-NinjaSaga CC Panel 1.1.0 - Portable
+NinjaSaga CC Panel 1.1.1 - Portable
 =====================================
 
 Cara download
